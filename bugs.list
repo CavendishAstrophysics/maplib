@@ -1,0 +1,7 @@
+
+Current known bugs in MAPLIB:
+
+ 06/03/92: [PA]
+   Problem using "data" for items in common without the use of block data
+   statements.  Superficial fix done in maplib_subgrid.inc.
+

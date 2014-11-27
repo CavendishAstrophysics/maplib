@@ -1,0 +1,76 @@
+# Makefile for the MRAO MAPLIB library
+#
+# This version for Linux 32-bit, 28/04/09 [djt]
+
+FFLAGC=-u -Wall -fPIC -O
+FCOMPL=g77 -m32
+CCOMPL=gcc -m32
+
+INCDIR=../../include
+LIBDIR=../../lib
+
+.f.o:
+	$(FCOMPL) -c $(FFLAGC) -I$(INCDIR) $<
+
+INCLUDE_FILES=\
+	maplib_common.inc maplib_errors.inc maplib_extrart.inc \
+	maplib_grading.inc maplib_minirt.inc maplib_proj.inc \
+	maplib_redtape.inc maplib_subgrid.inc maplib_tabfns.inc \
+	maplib_telescope.inc
+
+OBJECT_FILES=\
+	adredt.o bessjn.o blkmap.o chckuv.o chckuv2.o chredt.o \
+	corrfn.o dpproj.o dpredt.o dpxrdt.o eig_pswf.o enaper.o enepoch.o \
+	enbeam.o enhist.o enmapc.o enmapj.o enmdir.o enminirt.o ensrcn.o \
+	enmfil.o enmlsf.o enmpag.o ennull.o enproj.o enpoint.o \
+	enredt.o enrnge.o entpnt.o enuvct.o ensamp.o entype.o \
+	enxdsc.o enxrdt.o enxrec.o extmap.o filmap.o \
+	frddat.o frrads.o gam_0.o gam_m1.o gam_p1.o gen_pswf.o \
+	getbw.o getmap.o getuv.o intmap.o introw.o iuvmap.o iuvmap2.o \
+	iuvval.o iuvval2.o lbtord.o ldproj.o ldredt.o ldxrdt.o \
+	lmxmap.o maperr.o nwredt.o nxtmap.o opemap.o pbcorr.o \
+	pipsa.o pipsb.o pipsc.o preces.o precrd.o precrd2.o \
+	prhist.o prinvt.o prmapc.o prproj.o prredt.o prtmap.o \
+	rdarea.o rdmap.o rdmapc.o rdredt.o rdrow.o rdtolb.o \
+	rdtouv.o reproj.o repruv.o ruvduv.o ruvduv2.o ruvmax.o ruvmax2.o \
+	ruvval.o ruvval2.o scnmap.o scnmap2.o scnsrc2.o sincpi.o \
+	smpmap.o stbeam.o stmapc.o stmapj.o stmlsf.o stnull.o sttpnt.o \
+	stproj.o stredt.o stsamp.o stscal.o sttype.o stxrdt.o stxrec.o \
+	tabfn.o toddat.o torads.o uvtord.o wrmap.o wrmapc.o wrredt.o wrrow.o
+#	ex_maps.o exm_delete.o exm_disc.o exm_print.o exm_read.o
+
+# Dependencies for building the object library
+
+libmap.a : $(OBJECT_FILES)
+	ar ru libmap.a $(OBJECT_FILES)
+
+# Make dynamic library
+
+libmap.so : $(OBJECT_FILES)
+	$(CCOMPL) -shared -o libmap.so `ls $(OBJECT_FILES) | sort | uniq `
+
+tabfn.o : tabfn.f
+#	$(FCOMPL) -c -xl -Nl40 tabfn.f
+	$(FCOMPL) -c -fPIC tabfn.f
+
+# Target for building the library
+
+build : libmap.a $(INCLUDE_FILES) maplink
+
+# Target for installing the library
+
+install : libmap.a libmap.so
+	cp -p libmap.a libmap.so $(LIBDIR)
+
+# Target for cleaning up the source directory
+
+clean :
+	rm -f $(OBJECT_FILES)
+
+# Target for the exmaps utility program
+ 
+exmaps : exmaps.o
+	f77 -o exmaps exmaps.o \
+	-L/mrao/lib -lmap -lutil -lio -lch
+	mv exmaps $(BINDIR)
+ 

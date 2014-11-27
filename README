@@ -1,0 +1,84 @@
+
+MAPLIB subroutine library
+-------------------------
+
+Map handling subroutine library.
+
+MAPLIB contains a set of subroutines for handling radio astronomy maps
+from applications programs running on the ND-5xxx/SPARC processors.  The maps
+are assumed to be held in standard MRAO-ND map format, which is described
+in full on maplib_redtape.inc.
+
+Sections:
+
+The routines are arranged under the following headings:
+
+  (1)  Parameter input routines.
+  (2)  Map file handling routines.
+  (3)  Redtape handling routines.
+  (4)  Map data handling routines.
+  (5)  Map projection handling routines.
+  (6)  Coordinate conversion routines.
+
+Notes:
+
+Note that a comprehensive set of routines for astrometric calculations and
+coordinate conversions is available in the SLALIB library.
+
+Use of the routines:
+
+  Most map processing is done by reading in the complete map to a data
+  array within the application program, having first loaded the redtape
+  common blocks with all the parameters which describe the map.  The data
+  are processed and, if a new map is being produced, the redtape is adjusted
+  appropriately and then both redtape and data are written out to a new map
+  file.  Note that although the redtape makes provision for multiple-valued
+  maps, the data handling routines included here assume that only single-
+  valued data is being processed.
+
+Projections:
+
+  Parameters specifying the map projection are included in the redtape
+  and these are used during coordinate conversion from map grid points
+  to spherical coordinates.  The projection parameters are automatically
+  loaded into the coordinate conversion routines when the redtape is read
+  from a map file, but they may also be set up explicitly for an arbitrary
+  projection by using routine STPROJ.  The parameters describing the
+  current projection are defined in maplib_proj.inc.
+
+Aperture_data:
+
+  Aperture data may also be processed using the routines of this library.
+  The data is held using an extension of the map data format, with a
+  complex*8 internal data type, where each data point consists of a
+  (cos,sin) pair of real*4 values.
+
+Errors:
+
+  Most of the map handling routines include a STATUS value which is checked
+  on entry: if the value is not zero (OK), the routine will exit immediately.
+  The STATUS value will normally be zero on exit;  error conditions are
+  signalled by positive values (SYSTEM error codes) or negative values
+  (local error codes).  A list of the error codes local to MAPLIB can be
+  found on the file  maplib_errors.inc.  This file may be used
+  as an INCLUDE file within an application program to make the local error
+  codes available for testing.  Note that most errors will generate a
+  message to the error device from within the MAPLIB routine.
+
+Specifications:
+
+Use the SCAN-FILES utility to obtain details of individual routines:
+
+  scan_files "/mrao/source/maplib/map*.f" spec <routine>,,
+
+Loading:
+
+  You should use the MRAO command mraolink:
+
+    f77 -u -xl program.f -o program `mraolink`
+
+MRAO, Cambridge.
+DJT, 28 October 87.
+DJT/PA, 10 October 91: SUNOS version 1.0
+
+
